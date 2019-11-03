@@ -8,11 +8,13 @@ struct SLLNode {
 	SLLNode* next, * prev;
 };
 
+
 struct CharNode {
 	char data;
 	CharNode* next, * prev;
 	SLLNode* sllTop, * slltracker, * sllBottom;
 };
+
 
 class StringLL {
 private:
@@ -24,6 +26,7 @@ public:
 	void displayStringLL();
 	SLLNode* returnTop();
 };
+
 
 class CharList {
 private:
@@ -39,10 +42,16 @@ public:
 	void displayOffShoot(CharNode*);
 	CharNode* returnTop();
 	void displayEntire(); 
+	void displayCharInp(char);
+	void displayStrInp(string);
 };
+
 
 int main() {
 	int input;
+	char charInput;
+	string strInput;
+
 	// create a fake linked string list to test
 	StringLL s1 = StringLL();
 	s1.addNodeBottom("apple");
@@ -55,14 +64,8 @@ int main() {
 
 	//create a charlist to test functionality
 	CharList c1 = CharList();
-
 	SLLNode* topTester = s1.returnTop();
-
-	c1.create(topTester);
-
-	CharNode* topCharTester = c1.returnTop();
-	cout << "topCharTester = " << topCharTester->data << endl; 
-	c1.displayOffShoot(topCharTester); 
+	c1.create(topTester); // feed in a sorted linked list to creator
 
 	while (1) {
 		cout << endl << endl;
@@ -81,10 +84,14 @@ int main() {
 			c1.displayEntire();
 			break;
 		case 2:
-			cout << "This isn't built yet!" << endl;
+			cout << "Enter the char you want to look up: ";
+			cin >> charInput;
+			c1.displayCharInp(charInput);
 			break;
 		case 3:
-			cout << "This isn't built yet!" << endl;
+			cout << "Enter the string you want to search: ";
+			cin >> strInput;
+			c1.displayStrInp(strInput);
 			break;
 		case 4:
 			cout << "Program Terminated!" << endl;
@@ -96,7 +103,6 @@ int main() {
 
 
 // ----------------- StringLL Tester Functions ----------------------------- //
-
 StringLL::StringLL() {
 	sTop = sBottom = nullptr;
 	size = 0;
@@ -133,7 +139,6 @@ SLLNode* StringLL::returnTop() {
 
 
 // -------------------- CharList Functions ---------- //
-
 CharList::CharList() {
 	cTop = cBottom = nullptr;
 	sll = nullptr;
@@ -151,7 +156,6 @@ bool CharList::inList(SLLNode* ptr) {
 
 // correctly sets up linked list with char, can't link to SLL yet
 void CharList::insert(SLLNode* ptr) {
-	cout << "Insert has began = " << ptr->word << endl << endl;
 	if (size == 0) {
 		CharNode* p = new CharNode;
 		p->data = ptr->word.front();
@@ -168,9 +172,6 @@ void CharList::insert(SLLNode* ptr) {
 		p->sllTop = s;
 		p->slltracker = p->sllTop; 
 		p->sllBottom = p->slltracker->next; 
-
-		cout << "initial sll = " << p->slltracker->word << endl;
-		cout << "first Node data = " << p->data << endl;
 	}
 	else {
 		if (ptr->word.front() != cBottom->data) {
@@ -187,21 +188,15 @@ void CharList::insert(SLLNode* ptr) {
 			s = ptr; 
 			p->sllTop = s;
 			p->slltracker = p->sllTop; 
-			p->sllBottom = p->slltracker->next; 
-
-			cout << "sll embedded = " << p->slltracker->word << endl;
+			p->sllBottom = p->slltracker->next;
 		}
 		else {
-			cout << "it got this far = " << ptr->word << endl;
 			SLLNode* s = new SLLNode;
 			s = ptr;
 
 			tracker->slltracker->next = s; 
 			tracker->slltracker = tracker->slltracker->next; 
-			cout << "else clause sll =  " << tracker->slltracker->word << endl;
 			tracker->sllBottom = tracker->slltracker->next;
-
-			cout << "the bottom is = " << tracker->sllBottom->word << endl; 
 		}
 	}
 }
@@ -210,12 +205,9 @@ void CharList::insert(SLLNode* ptr) {
 // audited, this function traverses SLL fine
 void CharList::create(SLLNode* p) {
 	SLLNode* runner = p;
-	int i = 0;
 	while (runner != nullptr) {
-		cout << "create loop " << i << ": " << endl << endl;
 		insert(runner);
 		runner = runner->next;
-		i++; 
 	}
 }
 
@@ -250,6 +242,31 @@ void CharList::displayEntire() {
 		cout << runner->data << "-> ";
 		displayOffShoot(runner); 
 		cout << endl << "|" << endl; 
+		runner = runner->next; 
+	}
+}
+
+void CharList::displayCharInp(char input) {
+	CharNode* runner = cTop;
+	while (runner != nullptr) {
+		if (runner->data == input) {
+			displayOffShoot(runner);
+		}
+		runner = runner->next;
+	}
+}
+
+
+void CharList::displayStrInp(string input) {
+	CharNode* runner = cTop;
+	while (runner != nullptr) {
+		if (runner->data == input.front()) {
+			SLLNode* sllRunner = runner->sllTop; 
+			while (sllRunner != runner->sllBottom) {
+				if (sllRunner->word == input) cout << sllRunner->word << "->";
+				sllRunner = sllRunner->next; 
+			}
+		}
 		runner = runner->next; 
 	}
 }
